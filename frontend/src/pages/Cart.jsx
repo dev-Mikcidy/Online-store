@@ -5,13 +5,37 @@ import { CartContext } from "../context/CartContext";
 import { FaTrash } from "react-icons/fa";
 
 function Cart() {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+
   const { cartItems, increaseQuantity, decreaseQuantity, removeFromCart } =
     useContext(CartContext);
 
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
-    0
+    0,
   );
+
+  const handleCheckout = async () => {
+    try {
+      const response = await fetch(`${API_URL}/create-checkout-session`, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          cartItems,
+        }),
+      });
+
+      const data = await response.json();
+
+      window.location.href = data.url;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -41,15 +65,11 @@ function Cart() {
             <p>{product.price} SEK</p>
 
             <div className="cart-quantity-controls">
-              <button onClick={() => decreaseQuantity(product._id)}>
-                -
-              </button>
+              <button onClick={() => decreaseQuantity(product._id)}>-</button>
 
               <span>{product.quantity}</span>
 
-              <button onClick={() => increaseQuantity(product._id)}>
-                +
-              </button>
+              <button onClick={() => increaseQuantity(product._id)}>+</button>
               <button onClick={() => removeFromCart(product._id)}>
                 <FaTrash />
               </button>
@@ -60,12 +80,15 @@ function Cart() {
 
       <section className="cart-summary">
         <h2>Total: {totalAmount} SEK</h2>
-        <Link to="/checkout" className="checkout-button">
-          Proceed to Checkout
-        </Link>
+
+        <button className="checkout-button" onClick={handleCheckout}>
+          Checkout
+        </button>
       </section>
 
-      <Link to="/products" className="continue-shopping-button">Continue Shopping</Link>
+      <Link to="/products" className="continue-shopping-button">
+        Continue Shopping
+      </Link>
     </main>
   );
 }
