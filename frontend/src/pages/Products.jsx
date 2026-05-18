@@ -59,6 +59,14 @@ function Products() {
     }
   };
 
+  const handleAddToCart = (product) => {
+    if (product.quantity <= 0) {
+      return;
+    }
+
+    addToCart(product);
+  };
+
   const filteredProducts = products.filter((product) => {
     const searchValue = searchTerm.toLowerCase();
 
@@ -138,31 +146,20 @@ function Products() {
         </div>
       </section>
 
-      {isLoading && (
-        <p className="products-status">
-          Loading products...
-        </p>
+      {isLoading && <p className="products-status">Loading products...</p>}
+
+      {errorMessage && <p className="products-status error">{errorMessage}</p>}
+
+      {!isLoading && !errorMessage && sortedProducts.length === 0 && (
+        <p className="no-products-message">No products found.</p>
       )}
 
-      {errorMessage && (
-        <p className="products-status error">
-          {errorMessage}
-        </p>
-      )}
+      {!isLoading && !errorMessage && sortedProducts.length > 0 && (
+        <section className="products-list">
+          {sortedProducts.map((product) => {
+            const isOutOfStock = product.quantity <= 0;
 
-      {!isLoading &&
-        !errorMessage &&
-        sortedProducts.length === 0 && (
-          <p className="no-products-message">
-            No products found.
-          </p>
-        )}
-
-      {!isLoading &&
-        !errorMessage &&
-        sortedProducts.length > 0 && (
-          <section className="products-list">
-            {sortedProducts.map((product) => (
+            return (
               <div className="product-item" key={product._id}>
                 <img
                   className="product-image"
@@ -175,23 +172,15 @@ function Products() {
                 />
 
                 <div className="product-info">
-                  <p className="product-category">
-                    {product.category}
-                  </p>
+                  <p className="product-category">{product.category}</p>
 
                   <h2>{product.name}</h2>
 
-                  <p className="product-model">
-                    Model: {product.model}
-                  </p>
+                  <p className="product-model">Model: {product.model}</p>
 
-                  <p className="product-description">
-                    {product.description}
-                  </p>
+                  <p className="product-description">{product.description}</p>
 
-                  <p className="product-price">
-                    {product.price} SEK
-                  </p>
+                  <p className="product-price">{product.price} SEK</p>
 
                   <p
                     className={
@@ -214,17 +203,23 @@ function Products() {
                     </Link>
 
                     <button
-                      className="cart-button"
-                      onClick={() => addToCart(product)}
+                      className={
+                        isOutOfStock
+                          ? "cart-button disabled-cart-button"
+                          : "cart-button"
+                      }
+                      onClick={() => handleAddToCart(product)}
+                      disabled={isOutOfStock}
                     >
-                      Add to Cart
+                      {isOutOfStock ? "Out of stock" : "Add to Cart"}
                     </button>
                   </div>
                 </div>
               </div>
-            ))}
-          </section>
-        )}
+            );
+          })}
+        </section>
+      )}
     </main>
   );
 }

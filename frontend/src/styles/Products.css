@@ -203,6 +203,20 @@
   background-color: #1d4ed8;
 }
 
+.cart-button:disabled,
+.cart-button.disabled-cart-button {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.cart-button:disabled:hover,
+.cart-button.disabled-cart-button:hover {
+  background-color: #ccc;
+  color: #666;
+}
+
 .products-status {
   text-align: center;
   color: #555;
