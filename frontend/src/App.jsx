@@ -14,6 +14,7 @@ import Cancel from "./pages/Cancel";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Admin from "./pages/Admin";
+import BackToTop from "./components/BackToTop";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
       </Routes>
 
       <Footer />
+      <BackToTop />
     </BrowserRouter>
   );
 }
