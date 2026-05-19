@@ -63,6 +63,11 @@ function Cart() {
             <h2>{product.name}</h2>
             <p>{product.model}</p>
             <p>{product.price} SEK</p>
+            {product.quantity > 1 && (
+            <p>
+              Subtotal: {(product.price * product.quantity).toFixed(2)} SEK
+            </p>
+          )}
 
             <div className="cart-quantity-controls">
               <button onClick={() => decreaseQuantity(product._id)}>-</button>
@@ -79,7 +84,7 @@ function Cart() {
       ))}
 
       <section className="cart-summary">
-        <h2>Total: {totalAmount} SEK</h2>
+        <h2>Total: {totalAmount.toFixed(2)} SEK</h2>
 
         <button className="checkout-button" onClick={handleCheckout}>
           Checkout
