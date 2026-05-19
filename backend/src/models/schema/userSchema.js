@@ -14,10 +14,7 @@ const UserSchema = new Schema({
     default: "user",
   },
 
-  phoneNumber: {
-    countryCode: String,
-    number: String,
-  },
+  phoneNumber: {type: String, required: true},
 
   address: {
     street: String,
