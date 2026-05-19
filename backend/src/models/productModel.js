@@ -13,7 +13,7 @@ class ProductModel {
     return await Product.find({
       $or: [
         { name: { $regex: searchStr, $options: "i" } },
-        { model: { $regex: searchStr, $options: "i" } }
+        { model: { $regex: searchStr, $options: "i" } },
       ],
     });
   }
@@ -21,8 +21,13 @@ class ProductModel {
   async getProductById(id) {
     return await Product.findById(id);
   }
-}
 
-  
+  async updateProduct(id, quantity) {
+    await Product.updateOne(
+      { _id: id, quantity: { $gte: quantity } },
+      { $inc: { quantity: -quantity } },
+    );
+  }
+}
 
 export default new ProductModel();

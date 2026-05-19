@@ -9,7 +9,8 @@ import Cart from "./pages/Cart";
 import ProductDetails from "./pages/ProductDetails";
 import ResetPassword from "./pages/ResetPassword";
 import Account from "./pages/Account";
-import Checkout from "./pages/Checkout";
+import Success from "./pages/Success";
+import Cancel from "./pages/Cancel";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Admin from "./pages/Admin";
@@ -30,7 +31,8 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/account" element={<Account />} />
         <Route path="/admin" element={<Admin />} />
-        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/success" element={<Success />} />
+        <Route path="/cancel" element={<Cancel />} />
       </Routes>
 
       <Footer />

@@ -14,10 +14,11 @@ const OrderSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
       },
-      quantityBought: { type: Number, required: true, min: 0 },
+      quantity: { type: Number, required: true, min: 0 },
     },
   ],
   totalPrice: { type: Number, required: true, min: 0 },
+  status: {type: String, enum: ["paid", "pending", "failed", "cancelled"], default: "pending"},
   timeCreated: { type: Date, default: Date.now },
 });
 
