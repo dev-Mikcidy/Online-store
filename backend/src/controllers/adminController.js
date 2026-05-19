@@ -1,4 +1,4 @@
-import Admin from "../models/schema/adminSchema.js";
+import Admin from "../models/schema/userSchema.js";
 
 class adminController {
 
@@ -236,4 +236,4 @@ class adminController {
 
 }
 
-export default adminController;
+export default new adminController();
