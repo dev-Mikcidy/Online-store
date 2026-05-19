@@ -1,5 +1,6 @@
 import Admin from "../models/schema/userSchema.js";
 import Product from "../models/schema/productSchema.js";
+import Order from "../models/schema/orderSchema.js";
 
 class adminController {
 
@@ -227,6 +228,22 @@ class adminController {
             }
 
             return res.json(product);
+
+        } catch (err) {
+            return res.status(500).json({
+                msg: err.message
+            });
+        }
+    }
+
+    async getAllOrders(req, res) {
+        try {
+
+            const orders = await Order.find().sort({
+                timeCreated: -1
+            });
+
+            return res.json(orders);
 
         } catch (err) {
             return res.status(500).json({
