@@ -65,3 +65,15 @@
 .signup-link:hover {
   text-decoration: underline;
 }
+
+.signup-button:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 480px) {
+  .signup-form {
+    width: 100%;
+    max-width: 320px;
+    padding: 24px;
+  }
+}

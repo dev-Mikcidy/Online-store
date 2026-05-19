@@ -10,7 +10,6 @@ function Signup() {
     firstName: "",
     lastName: "",
     phoneNumber: "",
-    address: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -52,7 +51,6 @@ function Signup() {
             email: formData.email,
             password: formData.password,
             phoneNumber: formData.phoneNumber,
-            address: formData.address,
           }),
         }
       );
@@ -121,16 +119,6 @@ function Signup() {
           name="phoneNumber"
           placeholder="Phone Number"
           value={formData.phoneNumber}
-          onChange={handleChange}
-          className="signup-input"
-          required
-        />
-
-        <input
-          type="text"
-          name="address"
-          placeholder="Address"
-          value={formData.address}
           onChange={handleChange}
           className="signup-input"
           required
