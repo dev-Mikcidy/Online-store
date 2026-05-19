@@ -1,4 +1,5 @@
 import Admin from "../models/schema/userSchema.js";
+import Product from "../models/schema/productSchema.js";
 
 class adminController {
 
