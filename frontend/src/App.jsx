@@ -15,6 +15,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Admin from "./pages/Admin";
 import BackToTop from "./components/BackToTop";
+import Orders from "./pages/Orders";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/account" element={<Account />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/orders" element={<Orders />} />
         <Route path="/success" element={<Success />} />
         <Route path="/cancel" element={<Cancel />} />
       </Routes>

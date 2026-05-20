@@ -1,7 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
+
 import "../styles/Navbar.css";
+
 import { CartContext } from "../context/CartContext";
+
 import { FaShoppingCart } from "react-icons/fa";
 
 function Navbar() {
@@ -60,6 +63,7 @@ function Navbar() {
 
         <Link to="/cart" className="cart-link">
           <FaShoppingCart />
+
           <span>Cart</span>
 
           {totalItems > 0 && (
@@ -75,6 +79,10 @@ function Navbar() {
 
         {user ? (
           <div className="navbar-auth">
+            <Link to="/orders" className="orders-link">
+              Orders
+            </Link>
+
             <Link to="/account" className="navbar-user">
               Hi, {user.firstname}
             </Link>
@@ -92,7 +100,10 @@ function Navbar() {
               Login
             </Link>
 
-            <Link to="/signup" className="signup-nav-button">
+            <Link
+              to="/signup"
+              className="signup-nav-button"
+            >
               Sign up
             </Link>
           </div>

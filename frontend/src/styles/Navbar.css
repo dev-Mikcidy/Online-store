@@ -101,13 +101,12 @@
   color: white;
   text-decoration: none;
 }
+
 .cart-link {
   display: flex;
   align-items: center;
   gap: 6px;
-
   position: relative;
-
   text-decoration: none;
 }
 
@@ -127,6 +126,17 @@
   justify-content: center;
   align-items: center;
   padding: 2px;
+}
+
+.orders-link {
+  text-decoration: none;
+  color: black;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.orders-link:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {
