@@ -116,6 +116,10 @@
   cursor: pointer;
   display: inline-block;
   text-align: center;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid transparent;
+  box-sizing: border-box;
 }
 
 .primary-button {
@@ -130,8 +134,23 @@
   border: 1px solid #ddd;
 }
 
+.disabled-button {
+  background: white;
+  color: #999;
+  border: 1px solid #ddd;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
 .details-button:hover {
   opacity: 0.85;
+}
+
+.disabled-button:hover {
+  background: white;
+  color: #999;
+  border: 1px solid #ddd;
+  opacity: 1;
 }
 
 .product-details-status {

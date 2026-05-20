@@ -1,7 +1,53 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState, useContext } from "react";
+
 import "../styles/Navbar.css";
 
+import { CartContext } from "../context/CartContext";
+
+import { FaShoppingCart } from "react-icons/fa";
+
 function Navbar() {
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState(null);
+
+  const { cartItems } = useContext(CartContext);
+
+  const totalItems = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
+
+  const loadUser = () => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      setUser(null);
+    }
+  };
+
+  useEffect(() => {
+    loadUser();
+
+    window.addEventListener("storage", loadUser);
+
+    return () => {
+      window.removeEventListener("storage", loadUser);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    setUser(null);
+
+    navigate("/login");
+  };
+
   return (
     <header className="navbar">
       <div className="navbar-logo">
@@ -10,11 +56,58 @@ function Navbar() {
 
       <nav className="navbar-links">
         <Link to="/">Home</Link>
+
         <Link to="/products">Products</Link>
+
         <Link to="/about">About</Link>
-        <Link to="/cart">Cart</Link>
-        <Link to="/login">Login</Link>
-        <Link to="/signup">Sign up</Link>
+
+        <Link to="/cart" className="cart-link">
+          <FaShoppingCart />
+
+          <span>Cart</span>
+
+          {totalItems > 0 && (
+            <span className="cart-badge">
+              {totalItems}
+            </span>
+          )}
+        </Link>
+
+        {user?.role === "admin" && (
+          <Link to="/admin">Admin</Link>
+        )}
+
+        {user ? (
+          <div className="navbar-auth">
+            <Link to="/orders" className="orders-link">
+              Orders
+            </Link>
+
+            <Link to="/account" className="navbar-user">
+              Hi, {user.firstname}
+            </Link>
+
+            <button
+              className="logout-button"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div className="navbar-auth">
+            <Link to="/login" className="login-nav-link">
+              Login
+            </Link>
+
+            <Link
+              to="/signup"
+              className="signup-nav-button"
+            >
+              Sign up
+            </Link>
+          </div>
+        )}
       </nav>
     </header>
   );

@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useState, useContext } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import "../styles/ProductDetails.css";
+
+import { CartContext } from "../context/CartContext";
 
 function ProductDetails() {
   const { id } = useParams();
-
+  const navigate = useNavigate();
+  const { addToCart } = useContext(CartContext);
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -42,6 +45,15 @@ function ProductDetails() {
     fetchProductDetails();
   }, [API_URL, id]);
 
+  const handleAddToCart = () => {
+    if (!product || product.quantity <= 0) {
+      return;
+    }
+
+    addToCart(product);
+    navigate("/cart");
+  };
+
   if (isLoading) {
     return (
       <main className="product-details-page">
@@ -65,6 +77,8 @@ function ProductDetails() {
     );
   }
 
+  const isOutOfStock = product.quantity <= 0;
+
   return (
     <main className="product-details-page">
       <section className="product-details-card">
@@ -75,6 +89,7 @@ function ProductDetails() {
             "Product Image"
           )}
         </div>
+
         <div className="product-details-info">
           <p className="product-details-category">{product.category}</p>
 
@@ -110,9 +125,17 @@ function ProductDetails() {
           )}
 
           <div className="product-details-actions">
-            <Link className="details-button primary-button" to="/cart">
-              Add to cart
-            </Link>
+            <button
+              className={
+                isOutOfStock
+                  ? "details-button disabled-button"
+                  : "details-button primary-button"
+              }
+              onClick={handleAddToCart}
+              disabled={isOutOfStock}
+            >
+              {isOutOfStock ? "Out of stock" : "Add to cart"}
+            </button>
 
             <Link className="details-button secondary-button" to="/products">
               Back to products

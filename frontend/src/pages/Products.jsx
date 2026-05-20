@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+
 import "../styles/Products.css";
+import { CartContext } from "../context/CartContext";
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -8,6 +10,8 @@ function Products() {
   const [sortOption, setSortOption] = useState("default");
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const { addToCart } = useContext(CartContext);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category");
@@ -55,6 +59,14 @@ function Products() {
     }
   };
 
+  const handleAddToCart = (product) => {
+    if (product.quantity <= 0) {
+      return;
+    }
+
+    addToCart(product);
+  };
+
   const filteredProducts = products.filter((product) => {
     const searchValue = searchTerm.toLowerCase();
 
@@ -90,6 +102,7 @@ function Products() {
     <main className="products-page">
       <section className="products-header">
         <h1>Products</h1>
+
         <p>Browse our available products.</p>
 
         <input
@@ -143,44 +156,68 @@ function Products() {
 
       {!isLoading && !errorMessage && sortedProducts.length > 0 && (
         <section className="products-list">
-          {sortedProducts.map((product) => (
-            <div className="product-item" key={product._id}>
-              <img
-              className="product-image"
-              src={product.image}
-              alt={product.name}
-              onError={(e) => {
-                e.target.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30";
-              }}/>
+          {sortedProducts.map((product) => {
+            const isOutOfStock = product.quantity <= 0;
 
-              <div className="product-info">
-                <p className="product-category">{product.category}</p>
-                <h2>{product.name}</h2>
+            return (
+              <div className="product-item" key={product._id}>
+                <img
+                  className="product-image"
+                  src={product.image}
+                  alt={product.name}
+                  onError={(e) => {
+                    e.target.src =
+                      "https://images.unsplash.com/photo-1523275335684-37898b6baf30";
+                  }}
+                />
 
-                <p className="product-model">Model: {product.model}</p>
+                <div className="product-info">
+                  <p className="product-category">{product.category}</p>
 
-                <p className="product-description">{product.description}</p>
+                  <h2>{product.name}</h2>
 
-                <p className="product-price">{product.price} SEK</p>
+                  <p className="product-model">Model: {product.model}</p>
 
-                <p
-                  className={
-                    product.quantity > 0
-                      ? "product-stock in-stock"
-                      : "product-stock out-of-stock"
-                  }
-                >
-                  {product.quantity > 0
-                    ? `${product.quantity} in stock`
-                    : "Out of stock"}
-                </p>
+                  <p className="product-description">{product.description}</p>
 
-                <Link className="product-button" to={`/products/${product._id}`}>
-                  View product
-                </Link>
+                  <p className="product-price">{product.price} SEK</p>
+
+                  <p
+                    className={
+                      product.quantity > 0
+                        ? "product-stock in-stock"
+                        : "product-stock out-of-stock"
+                    }
+                  >
+                    {product.quantity > 0
+                      ? `${product.quantity} in stock`
+                      : "Out of stock"}
+                  </p>
+
+                  <div className="product-buttons">
+                    <Link
+                      className="product-button"
+                      to={`/products/${product._id}`}
+                    >
+                      View product
+                    </Link>
+
+                    <button
+                      className={
+                        isOutOfStock
+                          ? "cart-button disabled-cart-button"
+                          : "cart-button"
+                      }
+                      onClick={() => handleAddToCart(product)}
+                      disabled={isOutOfStock}
+                    >
+                      {isOutOfStock ? "Out of stock" : "Add to Cart"}
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </section>
       )}
     </main>

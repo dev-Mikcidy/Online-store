@@ -4,9 +4,9 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const OrderSchema = new Schema({
-  customerId: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Customer",
+    ref: "User",
   },
   products: [
     {
@@ -14,10 +14,11 @@ const OrderSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
       },
-      quantityBought: { type: Number, required: true, min: 0 },
+      quantity: { type: Number, required: true, min: 0 },
     },
   ],
   totalPrice: { type: Number, required: true, min: 0 },
+  status: {type: String, enum: ["paid", "pending", "failed", "cancelled"], default: "pending"},
   timeCreated: { type: Date, default: Date.now },
 });
 

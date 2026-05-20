@@ -37,3 +37,15 @@
   cursor: pointer;
   font-weight: bold;
 }
+
+.login-message {
+  color: red;
+  font-size: 14px;
+  text-align: center;
+}
+
+.login-success {
+  color: green;
+  font-size: 14px;
+  text-align: center;
+}
