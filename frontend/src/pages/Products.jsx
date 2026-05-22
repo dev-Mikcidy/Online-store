@@ -27,9 +27,12 @@ function Products() {
   ];
 
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchProducts(showLoading = false) {
       try {
-        setIsLoading(true);
+        if (showLoading) {
+          setIsLoading(true);
+        }
+
         setErrorMessage("");
 
         const response = await fetch(`${API_URL}/products`);
@@ -48,7 +51,13 @@ function Products() {
       }
     }
 
-    fetchProducts();
+    fetchProducts(true);
+
+    const interval = setInterval(() => {
+      fetchProducts(false);
+    }, 6000);
+
+    return () => clearInterval(interval);
   }, [API_URL]);
 
   const handleCategoryChange = (category) => {

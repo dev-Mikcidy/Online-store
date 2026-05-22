@@ -44,8 +44,15 @@ const Admin = () => {
       return;
     }
 
-    fetchAdminProducts();
+    fetchAdminProducts(true);
     fetchOrders();
+
+    const interval = setInterval(() => {
+      fetchAdminProducts(false);
+      fetchOrders();
+    }, 6000);
+
+    return () => clearInterval(interval);
   }, [navigate]);
 
   const showMessage = (text, type) => {
@@ -58,9 +65,7 @@ const Admin = () => {
 
     try {
       const res = await fetch(`${API_URL}/admin/orders`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await res.json();
@@ -73,11 +78,14 @@ const Admin = () => {
     }
   };
 
-  const fetchAdminProducts = async () => {
+  const fetchAdminProducts = async (showLoading = false) => {
     const token = localStorage.getItem("token");
 
     try {
-      setIsLoading(true);
+      if (showLoading) {
+        setIsLoading(true);
+      }
+
       setMessage("");
 
       const response = await fetch(`${API_URL}/admin/products`, {
@@ -199,13 +207,10 @@ const Admin = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(
-        `${API_URL}/admin/product/${productId}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await fetch(`${API_URL}/admin/product/${productId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       const data = await response.json();
 
@@ -237,22 +242,16 @@ const Admin = () => {
         </div>
       </section>
 
-      {/* OVERVIEW */}
-      {view === "overview" && !isLoading && (
-        <AdminStats orders={orders} />
-      )}
+      {view === "overview" && !isLoading && <AdminStats orders={orders} />}
 
       {message && (
         <p className={`admin-message ${messageType}`}>{message}</p>
       )}
 
-      {/* PRODUCTS */}
       {view === "products" && (
         <>
           <section className="admin-section">
-            <h2>
-              {editingProductId ? "Edit Product" : "Add Product"}
-            </h2>
+            <h2>{editingProductId ? "Edit Product" : "Add Product"}</h2>
 
             <form className="admin-form" onSubmit={handleSubmitProduct}>
               <input
@@ -263,6 +262,7 @@ const Admin = () => {
                 onChange={handleChange}
                 required
               />
+
               <input
                 type="text"
                 name="model"
@@ -292,22 +292,28 @@ const Admin = () => {
                 onChange={handleChange}
                 required
               />
+
               <input
                 type="number"
                 name="price"
                 placeholder="Price"
                 value={formData.price}
                 onChange={handleChange}
+                min="0"
+                step="0.01"
                 required
               />
+
               <input
                 type="number"
                 name="quantity"
                 placeholder="Quantity"
                 value={formData.quantity}
                 onChange={handleChange}
+                min="0"
                 required
               />
+
               <input
                 type="text"
                 name="ram"
@@ -315,6 +321,7 @@ const Admin = () => {
                 value={formData.ram}
                 onChange={handleChange}
               />
+
               <input
                 type="text"
                 name="ssd"
@@ -384,11 +391,10 @@ const Admin = () => {
                           <td>{product.price} SEK</td>
                           <td>{product.quantity}</td>
                           <td>
-                            <button
-                              onClick={() => handleEditClick(product)}
-                            >
+                            <button onClick={() => handleEditClick(product)}>
                               Edit
                             </button>
+
                             <button
                               onClick={() =>
                                 handleDeleteProduct(product._id)
