@@ -19,19 +19,30 @@ app.disable("x-powered-by");
 
 const allowedOrigins = [
   "http://localhost:5173",
-  process.env.FRONTEND_URL
+  "https://online-store-six-inky.vercel.app",
 ];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS not allowed"));
+    origin: (origin, callback) => {
+  
+      if (!origin) {
+        return callback(null, true);
       }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      if (origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
     },
-    credentials: true
+
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
