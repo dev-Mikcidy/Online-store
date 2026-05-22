@@ -12,7 +12,7 @@ function ProductDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
   useEffect(() => {
     async function fetchProductDetails(showLoading = false) {
@@ -23,7 +23,7 @@ function ProductDetails() {
 
         setErrorMessage("");
 
-        const response = await fetch(`${API_URL}/products/${id}`);
+        const response = await fetch(`${API_URL}/api/products/${id}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch product details");

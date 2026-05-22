@@ -16,7 +16,7 @@ function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category");
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
   const categories = [
     { label: "All", value: "" },
@@ -35,7 +35,7 @@ function Products() {
 
         setErrorMessage("");
 
-        const response = await fetch(`${API_URL}/products`);
+        const response = await fetch(`${API_URL}/api/products`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch products");

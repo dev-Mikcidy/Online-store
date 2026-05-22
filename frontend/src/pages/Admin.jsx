@@ -5,7 +5,7 @@ import AdminStats from "../components/AdminStats";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
   const emptyForm = {
     name: "",
@@ -76,7 +76,7 @@ const Admin = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`${API_URL}/admin/orders`, {
+      const res = await fetch(`${API_URL}/api/admin/orders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -100,7 +100,7 @@ const Admin = () => {
 
       setMessage("");
 
-      const response = await fetch(`${API_URL}/admin/products`, {
+      const response = await fetch(`${API_URL}/api/admin/products`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -168,8 +168,8 @@ const Admin = () => {
 
     const isEditing = Boolean(editingProductId);
     const url = isEditing
-      ? `${API_URL}/admin/product/${editingProductId}`
-      : `${API_URL}/admin/product`;
+      ? `${API_URL}/api/admin/product/${editingProductId}`
+      : `${API_URL}/api/admin/product`;
 
     const method = isEditing ? "PUT" : "POST";
 
@@ -219,7 +219,7 @@ const Admin = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`${API_URL}/admin/product/${productId}`, {
+      const response = await fetch(`${API_URL}/api/admin/product/${productId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -412,7 +412,7 @@ const Admin = () => {
                       key={category.label}
                       className={
                         selectedCategory === category.value ||
-                        (!selectedCategory && category.value === "")
+                          (!selectedCategory && category.value === "")
                           ? "admin-filter-button active"
                           : "admin-filter-button"
                       }

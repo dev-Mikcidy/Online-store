@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Backend API for the online store project",
   "type": "module",
-  "main": "src/server.js",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js"
