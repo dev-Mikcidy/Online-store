@@ -19,6 +19,14 @@ const Admin = () => {
     ssd: "",
   };
 
+  const categories = [
+    { label: "All", value: "" },
+    { label: "Phones", value: "Phone" },
+    { label: "Laptops", value: "Laptop" },
+    { label: "TVs", value: "Television" },
+    { label: "Accessories", value: "Accessories" },
+  ];
+
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [message, setMessage] = useState("");
@@ -27,6 +35,10 @@ const Admin = () => {
   const [formData, setFormData] = useState(emptyForm);
   const [editingProductId, setEditingProductId] = useState(null);
   const [view, setView] = useState("overview");
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [sortOption, setSortOption] = useState("default");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -230,6 +242,31 @@ const Admin = () => {
     }
   };
 
+  const filteredProducts = products.filter((product) => {
+    const searchValue = searchTerm.toLowerCase();
+
+    const matchesSearch =
+      product.name?.toLowerCase().includes(searchValue) ||
+      product.model?.toLowerCase().includes(searchValue) ||
+      product.category?.toLowerCase().includes(searchValue);
+
+    const matchesCategory = selectedCategory
+      ? product.category === selectedCategory
+      : true;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortOption === "price-low") return a.price - b.price;
+    if (sortOption === "price-high") return b.price - a.price;
+    if (sortOption === "stock-low") return a.quantity - b.quantity;
+    if (sortOption === "stock-high") return b.quantity - a.quantity;
+    if (sortOption === "name-az") return a.name.localeCompare(b.name);
+
+    return 0;
+  });
+
   return (
     <main className="admin-page">
       <section className="admin-header">
@@ -360,7 +397,51 @@ const Admin = () => {
             <section className="admin-section">
               <h2>Products</h2>
 
-              {products.length === 0 ? (
+              <div className="admin-product-controls">
+                <input
+                  className="admin-search"
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                />
+
+                <div className="admin-category-filter">
+                  {categories.map((category) => (
+                    <button
+                      key={category.label}
+                      className={
+                        selectedCategory === category.value ||
+                        (!selectedCategory && category.value === "")
+                          ? "admin-filter-button active"
+                          : "admin-filter-button"
+                      }
+                      onClick={() => setSelectedCategory(category.value)}
+                    >
+                      {category.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="admin-sort-control">
+                  <label htmlFor="admin-sort-products">Sort by:</label>
+
+                  <select
+                    id="admin-sort-products"
+                    value={sortOption}
+                    onChange={(event) => setSortOption(event.target.value)}
+                  >
+                    <option value="default">Default</option>
+                    <option value="price-low">Price: low to high</option>
+                    <option value="price-high">Price: high to low</option>
+                    <option value="stock-low">Stock: low to high</option>
+                    <option value="stock-high">Stock: high to low</option>
+                    <option value="name-az">Name: A-Z</option>
+                  </select>
+                </div>
+              </div>
+
+              {sortedProducts.length === 0 ? (
                 <p>No products found.</p>
               ) : (
                 <div className="admin-table-wrapper">
@@ -377,7 +458,7 @@ const Admin = () => {
                     </thead>
 
                     <tbody>
-                      {products.map((product) => (
+                      {sortedProducts.map((product) => (
                         <tr key={product._id}>
                           <td>
                             <img
@@ -391,17 +472,23 @@ const Admin = () => {
                           <td>{product.price} SEK</td>
                           <td>{product.quantity}</td>
                           <td>
-                            <button onClick={() => handleEditClick(product)}>
-                              Edit
-                            </button>
+                            <div className="admin-action-buttons">
+                              <button
+                                className="admin-edit-button"
+                                onClick={() => handleEditClick(product)}
+                              >
+                                Edit
+                              </button>
 
-                            <button
-                              onClick={() =>
-                                handleDeleteProduct(product._id)
-                              }
-                            >
-                              Delete
-                            </button>
+                              <button
+                                className="admin-delete-button"
+                                onClick={() =>
+                                  handleDeleteProduct(product._id)
+                                }
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
