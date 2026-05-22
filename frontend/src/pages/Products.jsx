@@ -16,7 +16,7 @@ function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category");
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
   const categories = [
     { label: "All", value: "" },
@@ -27,12 +27,15 @@ function Products() {
   ];
 
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchProducts(showLoading = false) {
       try {
-        setIsLoading(true);
+        if (showLoading) {
+          setIsLoading(true);
+        }
+
         setErrorMessage("");
 
-        const response = await fetch(`${API_URL}/products`);
+        const response = await fetch(`${API_URL}/api/products`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch products");
@@ -48,7 +51,13 @@ function Products() {
       }
     }
 
-    fetchProducts();
+    fetchProducts(true);
+
+    const interval = setInterval(() => {
+      fetchProducts(false);
+    }, 6000);
+
+    return () => clearInterval(interval);
   }, [API_URL]);
 
   const handleCategoryChange = (category) => {

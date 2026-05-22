@@ -4,6 +4,9 @@ import "../styles/Login.css";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:3001";
 
   const [formData, setFormData] = useState({
     email: "",
@@ -32,7 +35,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3001/api/auth/reset-password", {
+      const response = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

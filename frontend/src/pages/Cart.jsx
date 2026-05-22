@@ -5,7 +5,7 @@ import { CartContext } from "../context/CartContext";
 import { FaTrash } from "react-icons/fa";
 
 function Cart() {
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
   const { cartItems, increaseQuantity, decreaseQuantity, removeFromCart } =
     useContext(CartContext);
@@ -17,7 +17,7 @@ function Cart() {
 
   const handleCheckout = async () => {
     try {
-      const response = await fetch(`${API_URL}/create-checkout-session`, {
+      const response = await fetch(`${API_URL}/api/create-checkout-session`, {
         method: "POST",
 
         headers: {
