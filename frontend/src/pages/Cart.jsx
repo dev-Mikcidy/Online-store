@@ -26,7 +26,7 @@ function Cart() {
         },
 
         body: JSON.stringify({
-          userId: user.id,
+          userId: user?.id ?? null,
           cartItems,
         }),
       });
@@ -66,10 +66,10 @@ function Cart() {
             <p>{product.model}</p>
             <p>{product.price} SEK</p>
             {product.quantity > 1 && (
-            <p>
-              Subtotal: {(product.price * product.quantity).toFixed(2)} SEK
-            </p>
-          )}
+              <p>
+                Subtotal: {(product.price * product.quantity).toFixed(2)} SEK
+              </p>
+            )}
 
             <div className="cart-quantity-controls">
               <button onClick={() => decreaseQuantity(product._id)}>-</button>

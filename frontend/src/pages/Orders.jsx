@@ -15,8 +15,13 @@ function Orders() {
         }
 
         setErrorMessage("");
-
-        const response = await fetch(`${API_URL}/api/orders`);
+        let response;
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user.role === "admin") {
+          response = await fetch(`${API_URL}/api/orders`);
+        } else {
+          response = await fetch(`${API_URL}/api/orders/history`);
+        }
 
         if (!response.ok) {
           throw new Error("Failed to fetch products");
@@ -26,7 +31,7 @@ function Orders() {
         setOrders(data);
       } catch (error) {
         console.error(error);
-        setErrorMessage("Could not load products. Please try again later.");
+        setErrorMessage("Could not load orders. Please try again later.");
       } finally {
         setIsLoading(false);
       }
