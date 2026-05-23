@@ -3,7 +3,7 @@ import Order from "./schema/orderSchema.js";
 import Stripe from "stripe";
 
 class PaymentModel {
-  async createPayment(cartItems) {
+  async createPayment(id, cartItems) {
     const stripe = new Stripe(stripeConfig.apiKey, {
       apiVersion: "2026-04-22.dahlia",
     });
@@ -14,7 +14,7 @@ class PaymentModel {
     });
 
     const order = await Order.create({
-      userId: null, // User Id is not ready yet so NOT COMPLETED
+      userId: id,
       products: cartItems.map((product) => ({
         productId: product._id,
         quantity: product.quantity,

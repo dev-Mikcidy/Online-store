@@ -11,8 +11,8 @@ const stripe = new Stripe(stripeConfig.apiKey, {
 class PaymentController {
   async createPayment(req, res, next) {
     try {
-      const { cartItems } = req.body;
-      const session = await paymentModel.createPayment(cartItems);
+      const { userId, cartItems } = req.body;
+      const session = await paymentModel.createPayment(userId, cartItems);
       res.json({
         url: session.url,
       });
