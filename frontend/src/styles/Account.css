@@ -1,29 +1,47 @@
 .account-container {
-  min-height: 80vh;
-  padding: 60px 30px;
-  background-color: white;
+  width: min(1180px, calc(100% - 36px));
+  min-height: calc(100vh - 80px);
+  margin: 0 auto;
+  padding: 56px 0 80px;
+  background: transparent;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .account-card {
-  max-width: 700px;
+  width: min(700px, 100%);
   margin: 0 auto;
-  padding: 30px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background-color: white;
+  padding: 38px;
+
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
 }
 
 .account-card h1 {
   text-align: center;
-  margin-bottom: 8px;
-  font-size: 32px;
+  margin-bottom: 10px;
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -1.4px;
+  font-weight: 850;
+
+  background: var(--blue-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .account-subtitle {
   text-align: center;
-  margin-bottom: 30px;
-  color: #5f5875;
-  font-size: 18px;
+  margin-bottom: 34px;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
 }
 
 .account-info {
@@ -35,9 +53,13 @@
 .account-row {
   display: flex;
   justify-content: space-between;
+  gap: 24px;
+
   padding: 18px 0;
-  border-bottom: 1px solid #eee;
-  font-size: 17px;
+  border-bottom: 1px solid rgba(37, 99, 235, 0.12);
+
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .account-row:last-child {
@@ -45,9 +67,33 @@
 }
 
 .account-row span {
-  color: #5f5875;
+  color: var(--text-muted);
 }
 
 .account-row strong {
-  color: #5f5875;
+  color: var(--text-dark);
+  font-weight: 800;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .account-container {
+    width: min(100% - 20px, 1180px);
+    min-height: calc(100vh - 64px);
+    padding: 36px 0 56px;
+  }
+
+  .account-card {
+    padding: 28px 22px;
+  }
+
+  .account-row {
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+  }
+
+  .account-row strong {
+    text-align: left;
+  }
 }
