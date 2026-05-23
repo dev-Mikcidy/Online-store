@@ -21,60 +21,65 @@ class PaymentController {
     }
   }
 
-  async webHook(req, res, next) {
-    let event, status, orderId;
-    const endpointSecret = stripeConfig.endpointSecret;
-    if (endpointSecret) {
-      // Get the signature sent by Stripe
-      const signature = req.headers["stripe-signature"];
-      try {
-        event = stripe.webhooks.constructEvent(
-          req.body,
-          signature,
-          endpointSecret,
-        );
-      } catch (err) {
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-      }
+  async createWebhook(req, res, next) {
+    let event;
+    let status;
+    let orderId;
+    const secret = stripeConfig.endpointSecret;
+    if (!secret) {
+      res.status(404).send("Endpoint secret not found");
+      return;
+    }
 
-      // Handle the event
+    // Get the signature sent by Stripe
+    const signature = req.headers["stripe-signature"];
+    try {
+      event = stripe.webhooks.constructEvent(req.body, signature, secret);
       switch (event.type) {
-        case "checkout.session.completed":
+        case "checkout.session.completed": {
           const session = event.data.object;
+
           if (session.payment_status === "paid") {
             orderId = session.metadata.orderId;
-
-            status = "paid";
-
-            const order = await Order.findOne(
-              { _id: orderId, status: "pending" },
-              { products: true },
-            );
-
+            const order = await Order.findById(orderId);
             if (!order) {
               throw new Error("Order not found or already processed");
             }
-
             for (const product of order.products) {
-              await productModel.updateProduct(
+              const updateResult = await productModel.updateProduct(
                 product.productId,
                 product.quantity,
               );
+              if (!updateResult || updateResult.modifiedCount === 0) {
+                throw new Error(
+                  `Failed to update product ${product.productId}: insufficient stock or update error`,
+                );
+              }
             }
+            status = "paid";
           }
           break;
+        }
         case "checkout.session.expired":
           status = "cancelled";
+          orderId = event.data.object.metadata?.orderId;
+
           break;
         case "payment_intent.payment_failed":
           status = "failed";
+          orderId = event.data.object.metadata?.orderId;
+          
+          break;
+        default:
           break;
       }
-      if (orderId) {
+      if (orderId && status) {
         await Order.updateOne({ _id: orderId }, { status });
       }
 
       res.json({ received: true });
+    } catch (err) {
+      return res.status(400).send(`Webhook Error: ${err.message}`);
     }
   }
 }
