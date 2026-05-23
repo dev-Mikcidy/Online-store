@@ -28,15 +28,18 @@ class PaymentModel {
           currency: "sek",
           product_data: {
             name: product.name,
-            images: [product.image],
           },
-          unit_amount: product.price * 100,
+          unit_amount: Math.round(product.price * 100),
         },
         quantity: product.quantity,
       })),
-
       metadata: {
         orderId: order._id.toString(),
+      },
+      payment_intent_data: {
+        metadata: {
+          orderId: order._id.toString(),
+        },
       },
 
       automatic_tax: {
