@@ -5,6 +5,7 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { router as route } from "./routes/index.js";
+import controller from "./controllers/paymentController.js";
 dotenv.config();
 
 export const app = express();
@@ -25,7 +26,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-  
       if (!origin) {
         return callback(null, true);
       }
@@ -43,9 +43,13 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
-
+app.use(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  controller.createWebhook,
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
