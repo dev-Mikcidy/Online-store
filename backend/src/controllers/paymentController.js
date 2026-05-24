@@ -49,16 +49,18 @@ class PaymentController {
 
           if (!orderId) break;
 
+          if (session.payment_status !== "paid") break; // ← guard added
+
           const order = await Order.findOneAndUpdate(
             { _id: orderId, status: { $ne: "paid" } },
-            { status: "processing" },
+            { status: "pending" },
             { new: true },
           );
 
           if (!order) return res.json({ received: true });
 
           for (const item of order.products) {
-            await Product.update(
+            await Product.updateOne( // ← was Product.update
               {
                 _id: item.productId,
                 quantity: { $gte: item.quantity },
@@ -100,6 +102,7 @@ class PaymentController {
 
       return res.json({ received: true });
     } catch (err) {
+      console.error("WEBHOOK ERROR:", err.message, err.stack); // ← added for debugging
       return res.status(500).send(`Webhook Error: ${err.message}`);
     }
   }
