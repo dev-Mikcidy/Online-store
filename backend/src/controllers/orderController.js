@@ -12,7 +12,7 @@ class OrderController {
 
   async getUserOrders(req, res, next) {
     try {
-      const { userId } = req.body;
+      const { userId } = req.params;
       const result = await order.getUserOrders(userId);
       res.json(result);
     } catch (error) {

@@ -1,12 +1,14 @@
 import "../styles/Orders.css";
-import { useEffect, useState, useContext } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function Orders() {
-  const [products, setOrders] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [productsMap, setProductsMap] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
   useEffect(() => {
     async function fetchOrders(showLoading = false) {
       try {
@@ -15,22 +17,76 @@ function Orders() {
         }
 
         setErrorMessage("");
-        let response;
+
         const user = JSON.parse(localStorage.getItem("user"));
+
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        let response;
+
         if (user.role === "admin") {
           response = await fetch(`${API_URL}/api/orders`);
         } else {
-          response = await fetch(`${API_URL}/api/orders/history`);
+          console.log(`User ID: ${user.id}`);
+          response = await fetch(`${API_URL}/api/orders/${user.id}`);
         }
 
         if (!response.ok) {
-          throw new Error("Failed to fetch products");
+          throw new Error("Failed to fetch orders");
         }
 
-        const data = await response.json();
-        setOrders(data);
+        const ordersData = await response.json();
+
+        setOrders(ordersData);
+
+        // Fetch all product details
+        const uniqueProductIds = [
+          ...new Set(
+            ordersData.flatMap((order) =>
+              order.products.map((product) => product.productId),
+            ),
+          ),
+        ];
+
+        const productRequests = uniqueProductIds.map(async (productId) => {
+          try {
+            const productResponse = await fetch(
+              `${API_URL}/api/products/${productId}`,
+            );
+
+            if (!productResponse.ok) {
+              throw new Error("Failed to fetch product");
+            }
+
+            const productData = await productResponse.json();
+
+            return {
+              id: productId,
+              data: productData,
+            };
+          } catch (error) {
+            console.error(`Error fetching product ${productId}:`, error);
+
+            return null;
+          }
+        });
+
+        const fetchedProducts = await Promise.all(productRequests);
+
+        const productsObject = {};
+
+        fetchedProducts.forEach((product) => {
+          if (product) {
+            productsObject[product.id] = product.data;
+          }
+        });
+
+        setProductsMap(productsObject);
       } catch (error) {
         console.error(error);
+
         setErrorMessage("Could not load orders. Please try again later.");
       } finally {
         setIsLoading(false);
@@ -41,10 +97,26 @@ function Orders() {
 
     const interval = setInterval(() => {
       fetchOrders(false);
-    }, 6000);
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [API_URL]);
+
+  if (isLoading) {
+    return (
+      <main className="orders-page">
+        <p className="loading-message">Loading orders...</p>
+      </main>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <main className="orders-page">
+        <p className="error-message">{errorMessage}</p>
+      </main>
+    );
+  }
 
   return (
     <main className="orders-page">
@@ -55,39 +127,66 @@ function Orders() {
       </section>
 
       <section className="orders-list">
-        <div className="order-card">
-          <div className="order-top">
-            <h2>Order #10234</h2>
+        {orders.length === 0 ? (
+          <p className="empty-orders">No orders found.</p>
+        ) : (
+          orders.map((order) => (
+            <div className="order-card" key={order._id}>
+              <div className="order-top">
+                <h2>Order #{order._id}</h2>
 
-            <span className="order-status delivered">Delivered</span>
-          </div>
+                <span className={`order-status ${order.status?.toLowerCase()}`}>
+                  {order.status}
+                </span>
+              </div>
 
-          <p className="order-date">August 20, 2025</p>
+              <p className="order-date">
+                {new Date(order.timeCreated).toLocaleString()}
+              </p>
 
-          <div className="order-products">
-            <p>iPhone 15 Pro × 1</p>
+              <div className="order-products">
+                {order.products.map((product) => {
+                  const productData = productsMap[product.productId];
 
-            <p>AirPods Pro × 2</p>
-          </div>
+                  return (
+                    <div className="order-product-item" key={product.productId}>
+                      {productData?.image && (
+                        <img
+                          src={productData.image}
+                          alt={productData.name}
+                          className="order-product-image"
+                        />
+                      )}
 
-          <h3 className="order-total">Total: 28,500 SEK</h3>
-        </div>
+                      <div className="order-product-details">
+                        <p>
+                          <strong>Product Name:</strong>{" "}
+                          {productData?.name || "Unknown Product"}
+                        </p>
 
-        <div className="order-card">
-          <div className="order-top">
-            <h2>Order #10218</h2>
+                        <p>
+                          <strong>Product Model:</strong>{" "}
+                          {productData?.model || "N/A"}
+                        </p>
 
-            <span className="order-status processing">Processing</span>
-          </div>
+                        <p>
+                          <strong>Product Category:</strong>{" "}
+                          {productData?.category || "N/A"}
+                        </p>
 
-          <p className="order-date">August 15, 2025</p>
+                        <p>
+                          <strong>Quantity:</strong> {product.quantity}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-          <div className="order-products">
-            <p>MacBook Air M3 × 1</p>
-          </div>
-
-          <h3 className="order-total">Total: 16,999 SEK</h3>
-        </div>
+              <h3 className="order-total">Total: ${order.totalPrice}</h3>
+            </div>
+          ))
+        )}
       </section>
     </main>
   );
