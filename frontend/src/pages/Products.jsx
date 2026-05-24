@@ -176,7 +176,7 @@ function Products() {
                   alt={product.name}
                   onError={(e) => {
                     e.target.src =
-                      "https://images.unsplash.com/photo-1523275335684-37898b6baf30";
+                      "https://images.pexels.com/photos/159643/laptop-ipad-organic-natural-159643.jpeg";
                   }}
                 />
 

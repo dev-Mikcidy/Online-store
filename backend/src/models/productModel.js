@@ -23,7 +23,7 @@ class ProductModel {
   }
 
   async updateProduct(id, quantity) {
-    await Product.updateOne(
+    return await Product.updateOne(
       { _id: id, quantity: { $gte: quantity } },
       { $inc: { quantity: -quantity } },
     );
