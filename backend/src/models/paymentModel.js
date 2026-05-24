@@ -51,8 +51,8 @@ class PaymentModel {
         enabled: true,
       },
       mode: "payment",
-      success_url: "https://online-store-theta-rose.vercel.app/success",
-      cancel_url: "https://online-store-theta-rose.vercel.app/cancel",
+      success_url: stripeConfig.successURL,
+      cancel_url: stripeConfig.cancelURL,
     });
   }
 }
