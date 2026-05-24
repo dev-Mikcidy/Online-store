@@ -27,9 +27,9 @@ The project features a protected admin dashboard where administrators can manage
 
 ## Live Demo
 
-Frontend (Vercel):  
+Frontend (Vercel): online-store-six-inky.vercel.app 
 
-Backend API (Render):  
+Backend API (Render): https://online-store-8qo5.onrender.comapi/products
 
 # Project Setup Instructions
 
