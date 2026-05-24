@@ -21,13 +21,6 @@ class ProductModel {
   async getProductById(id) {
     return await Product.findById(id);
   }
-
-  async updateProduct(id, quantity) {
-    return await Product.updateOne(
-      { _id: id, quantity: { $gte: quantity } },
-      { $inc: { quantity: -quantity } },
-    );
-  }
 }
 
 export default new ProductModel();

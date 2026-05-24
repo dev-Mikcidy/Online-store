@@ -1,7 +1,7 @@
 import paymentModel from "../models/paymentModel.js";
 import stripeConfig from "../config/stripe.js";
 import Order from "../models/schema/orderSchema.js";
-import productModel from "../models/productModel.js";
+import Product from "../models/schema/productSchema.js";
 import Stripe from "stripe";
 
 const stripe = new Stripe(stripeConfig.apiKey, {
@@ -22,64 +22,85 @@ class PaymentController {
   }
 
   async createWebhook(req, res, next) {
-    let event;
-    let status;
-    let orderId;
     const secret = stripeConfig.endpointSecret;
+
     if (!secret) {
-      res.status(404).send("Endpoint secret not found");
-      return;
+      return res.status(400).send("Endpoint secret not found");
     }
 
-    // Get the signature sent by Stripe
     const signature = req.headers["stripe-signature"];
+
+    let event;
+
     try {
       event = stripe.webhooks.constructEvent(req.body, signature, secret);
+    } catch (err) {
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    let orderId;
+    let status;
+
+    try {
       switch (event.type) {
         case "checkout.session.completed": {
           const session = event.data.object;
+          orderId = session.metadata?.orderId;
 
-          if (session.payment_status === "paid") {
-            orderId = session.metadata.orderId;
-            const order = await Order.findById(orderId);
-            if (!order) {
-              throw new Error("Order not found or already processed");
-            }
-            for (const product of order.products) {
-              const updateResult = await productModel.updateProduct(
-                product.productId,
-                product.quantity,
-              );
-              if (!updateResult || updateResult.modifiedCount === 0) {
-                throw new Error(
-                  `Failed to update product ${product.productId}: insufficient stock or update error`,
-                );
-              }
-            }
-            status = "paid";
+          if (!orderId) break;
+
+          const order = await Order.findOneAndUpdate(
+            { _id: orderId, status: { $ne: "paid" } },
+            { status: "processing" },
+            { new: true },
+          );
+
+          if (!order) return res.json({ received: true });
+
+          for (const item of order.products) {
+            await Product.update(
+              {
+                _id: item.productId,
+                quantity: { $gte: item.quantity },
+              },
+              {
+                $inc: { quantity: -item.quantity },
+              },
+            );
           }
+
+          order.status = "paid";
+          await order.save();
+
           break;
         }
-        case "checkout.session.expired":
-          status = "cancelled";
-          orderId = event.data.object.metadata?.orderId;
 
-          break;
-        case "payment_intent.payment_failed":
-          status = "failed";
+        case "checkout.session.expired": {
           orderId = event.data.object.metadata?.orderId;
-          
+          status = "cancelled";
           break;
+        }
+
+        case "payment_intent.payment_failed": {
+          orderId = event.data.object.metadata?.orderId;
+          status = "failed";
+          break;
+        }
+
         default:
           break;
       }
+
       if (orderId && status) {
-        await Order.updateOne({ _id: orderId }, { status });
+        await Order.updateOne(
+          { _id: orderId, status: { $ne: "paid" } },
+          { status },
+        );
       }
 
-      res.json({ received: true });
+      return res.json({ received: true });
     } catch (err) {
-      return res.status(400).send(`Webhook Error: ${err.message}`);
+      return res.status(500).send(`Webhook Error: ${err.message}`);
     }
   }
 }
