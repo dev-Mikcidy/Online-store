@@ -3,6 +3,7 @@ import stripeConfig from "../config/stripe.js";
 import Order from "../models/schema/orderSchema.js";
 import Product from "../models/schema/productSchema.js";
 import Stripe from "stripe";
+import Cart from "../models/cartModel.js";
 
 const stripe = new Stripe(stripeConfig.apiKey, {
   apiVersion: "2026-04-22.dahlia",
@@ -73,6 +74,12 @@ class PaymentController {
 
           order.status = "paid";
           await order.save();
+
+          //Clear the user's cart after successful payment
+          await Cart.findOneAndUpdate(
+            { user: order.userId },
+            { $set: { items: [] } },
+          );
 
           break;
         }
