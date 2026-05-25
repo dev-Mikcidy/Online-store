@@ -15,11 +15,14 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Admin from "./pages/Admin";
 import BackToTop from "./components/BackToTop";
+import ScrollToTop from "./components/ScrollToTop";
 import Orders from "./pages/Orders";
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
+
       <Navbar />
 
       <Routes>
