@@ -27,9 +27,8 @@ function Orders() {
         let response;
 
         if (user.role === "admin") {
-          response = await fetch(`${API_URL}/api/orders`);
+          response = await fetch(`${API_URL}/api/orders/all`);
         } else {
-          console.log(`User ID: ${user.id}`);
           response = await fetch(`${API_URL}/api/orders/${user.id}`);
         }
 
@@ -97,7 +96,7 @@ function Orders() {
 
     const interval = setInterval(() => {
       fetchOrders(false);
-    }, 8000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [API_URL]);
@@ -183,7 +182,7 @@ function Orders() {
                 })}
               </div>
 
-              <h3 className="order-total">Total: ${order.totalPrice}</h3>
+              <h3 className="order-total">Total: {order.totalPrice} SEK</h3>
             </div>
           ))
         )}
