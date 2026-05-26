@@ -1,43 +1,28 @@
-import {
-  useState,
-  useContext,
-} from "react";
-
-import {
-  useNavigate,
-  Link,
-} from "react-router-dom";
+import { useState, useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 import "../styles/Login.css";
 
-import { CartContext }
-from "../context/CartContext";
+import { CartContext } from "../context/CartContext";
 
 const Login = () => {
   const navigate = useNavigate();
 
-  const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "http://localhost:3001";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
-  // NEW
-  const { fetchCart } =
-    useContext(CartContext);
+  const { fetchCart } = useContext(CartContext);
 
-  const [formData, setFormData] =
-    useState({
-      email: "",
-      password: "",
-    });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-  const [message, setMessage] =
-    useState("");
+  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -47,80 +32,52 @@ const Login = () => {
     setMessage("");
 
     try {
-      const response = await fetch(
-        `${API_URL}/api/auth/login`,
-        {
-          method: "POST",
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-          body: JSON.stringify(
-            formData
-          ),
-        }
-      );
+        body: JSON.stringify(formData),
+      });
 
-      const data =
-        await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
-        setMessage(
-          data.msg ||
-            "Login failed"
-        );
-
+        setMessage(data.msg || "Login failed");
         return;
       }
 
-      localStorage.setItem(
-        "token",
-        data.token
-      );
+      localStorage.setItem("token", data.token);
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify(data.user)
-      );
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      // LOAD USER CART
+      // Clear old guest cart so it does not come back after logout
+      localStorage.removeItem("guestCart");
+
+      // Load the logged-in user's backend cart
       await fetchCart();
 
-      window.dispatchEvent(
-        new Event("storage")
-      );
+      window.dispatchEvent(new Event("storage"));
 
-      if (
-        data.user.role === "admin"
-      ) {
+      if (data.user.role === "admin") {
         navigate("/admin");
-
       } else {
         navigate("/");
       }
-
     } catch (error) {
-      setMessage(
-        "Could not connect to server"
-      );
+      console.error(error);
+      setMessage("Could not connect to server");
     }
   };
 
   return (
     <div className="login-container">
-      <form
-        className="login-form"
-        onSubmit={handleSubmit}
-      >
+      <form className="login-form" onSubmit={handleSubmit}>
         <h1>Login</h1>
 
-        {message && (
-          <p className="login-message">
-            {message}
-          </p>
-        )}
+        {message && <p className="login-message">{message}</p>}
 
         <input
           type="email"
@@ -142,31 +99,20 @@ const Login = () => {
           required
         />
 
-        <button
-          type="submit"
-          className="login-button"
-        >
+        <button type="submit" className="login-button">
           Login
         </button>
 
         <p className="login-text">
           Don't have an account yet?{" "}
-
-          <Link
-            to="/signup"
-            className="login-link"
-          >
+          <Link to="/signup" className="login-link">
             Register
           </Link>
         </p>
 
         <p className="login-text">
           Forgot password?{" "}
-
-          <Link
-            to="/reset-password"
-            className="login-link"
-          >
+          <Link to="/reset-password" className="login-link">
             Reset your password
           </Link>
         </p>
