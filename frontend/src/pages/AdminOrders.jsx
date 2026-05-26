@@ -2,7 +2,7 @@ import "../styles/Orders.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Orders() {
+function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [productsMap, setProductsMap] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -12,14 +12,14 @@ function Orders() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Role guard: redirect admins away from the user orders page
+    // Role guard: only admins may access this page
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
       navigate("/login");
       return;
     }
-    if (user.role === "admin") {
-      navigate("/admin-orders");
+    if (user.role !== "admin") {
+      navigate("/orders");
       return;
     }
 
@@ -30,13 +30,12 @@ function Orders() {
 
         const token = localStorage.getItem("token");
 
-        // Correct endpoint: fetch only this user's orders
-        const response = await fetch(`${API_URL}/api/orders/user`,{
-                headers: {
-                  "Content-Type": "application/json",
-                  authorization: `Bearer ${token}`,
-                },
-              });
+        const response = await fetch(`${API_URL}/api/admin/orders`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!response.ok) throw new Error("Failed to fetch orders");
 
@@ -46,15 +45,15 @@ function Orders() {
         const uniqueProductIds = [
           ...new Set(
             ordersData.flatMap((order) =>
-              order.products.map((product) => product.productId)
-            )
+              order.products.map((product) => product.productId),
+            ),
           ),
         ];
 
         const productRequests = uniqueProductIds.map(async (productId) => {
           try {
             const productResponse = await fetch(
-              `${API_URL}/api/products/${productId}`
+              `${API_URL}/api/products/${productId}`,
             );
             if (!productResponse.ok) throw new Error("Failed to fetch product");
             const productData = await productResponse.json();
@@ -80,11 +79,7 @@ function Orders() {
     }
 
     fetchOrders(true);
-
-    const interval = setInterval(() => {
-      fetchOrders(false);
-    }, 10000);
-
+    const interval = setInterval(() => fetchOrders(false), 8000);
     return () => clearInterval(interval);
   }, [API_URL, navigate]);
 
@@ -107,8 +102,8 @@ function Orders() {
   return (
     <main className="orders-page">
       <section className="orders-header">
-        <h1>Order History</h1>
-        <p>View your previous orders and purchases.</p>
+        <h1>All Orders</h1>
+        <p>Manage and review all customer orders.</p>
       </section>
 
       <section className="orders-list">
@@ -162,7 +157,7 @@ function Orders() {
                 })}
               </div>
 
-              <h3 className="order-total">Total: {order.totalPrice} SEK</h3>
+              <h3 className="order-total">Total: ${order.totalPrice}</h3>
             </div>
           ))
         )}
@@ -171,4 +166,4 @@ function Orders() {
   );
 }
 
-export default Orders;
+export default AdminOrders;
