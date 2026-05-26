@@ -1,71 +1,32 @@
-import {
-  useEffect,
-  useContext,
-} from "react";
-
+import { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-
-import { CartContext }
-from "../context/CartContext";
+import { CartContext } from "../context/CartContext";
 
 function Success() {
-  const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "http://localhost:3001";
-
-  const { clearCart } =
-    useContext(CartContext);
+  const { clearCart } = useContext(CartContext);
 
   useEffect(() => {
     async function handleSuccess() {
       try {
-        const token =
-          localStorage.getItem("token");
-
-        if (!token) return;
-
-        // CLEAR BACKEND CART
-        await fetch(
-          `${API_URL}/api/cart`,
-          {
-            method: "DELETE",
-
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        // CLEAR FRONTEND CART STATE
-        clearCart();
-
+        await clearCart();
       } catch (error) {
         console.error(error);
       }
     }
 
     handleSuccess();
-
-  }, []);
+  }, [clearCart]);
 
   return (
     <main className="payment-result-page">
       <section className="payment-result-card success">
-        <h1>
-          Payment Successful
-        </h1>
+        <h1>Payment Successful</h1>
 
-        <p>
-          Thank you for your purchase.
-        </p>
+        <p>Thank you for your purchase.</p>
 
-        <p>
-          Your order has been received successfully.
-        </p>
+        <p>Your order has been received successfully.</p>
 
-        <Link to="/products">
-          Continue Shopping
-        </Link>
+        <Link to="/products">Continue Shopping</Link>
       </section>
     </main>
   );
