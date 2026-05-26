@@ -32,6 +32,89 @@
   line-height: 1.7;
 }
 
+/* Search bar and filter buttons */
+.orders-controls {
+  width: min(900px, 100%);
+  margin: 0 auto 34px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.orders-search {
+  width: min(620px, 100%);
+  padding: 18px 24px;
+
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+
+  color: var(--text-dark);
+  font-size: 1.08rem;
+  font-weight: 600;
+  outline: none;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.orders-search:focus {
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.orders-search:hover {
+  transform: translateY(-1px);
+}
+
+.orders-status-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.orders-status-button {
+  padding: 13px 24px;
+
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+
+  color: #1d4ed8;
+  font-size: 1rem;
+  font-weight: 850;
+  cursor: pointer;
+
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.orders-status-button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: var(--shadow-hover);
+}
+
+.orders-status-button.active {
+  color: #ffffff;
+  border-color: transparent;
+  background: var(--blue-gradient);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.22);
+}
+
 .orders-list {
   width: min(900px, 100%);
   margin: 0 auto;
@@ -76,6 +159,7 @@
   font-size: 1.45rem;
   color: var(--text-dark);
   font-weight: 850;
+  word-break: break-word;
 }
 
 .order-status {
@@ -111,6 +195,13 @@
 
 /* Cancelled = muted gray */
 .order-status.cancelled {
+  background: rgba(100, 116, 139, 0.16);
+  color: #334155;
+  border: 1px solid rgba(100, 116, 139, 0.34);
+}
+
+/* Optional support if backend uses "canceled" instead of "cancelled" */
+.order-status.canceled {
   background: rgba(100, 116, 139, 0.16);
   color: #334155;
   border: 1px solid rgba(100, 116, 139, 0.34);
@@ -197,6 +288,23 @@
 
   .orders-header {
     margin-bottom: 30px;
+  }
+
+  .orders-controls {
+    gap: 18px;
+  }
+
+  .orders-search {
+    width: 100%;
+  }
+
+  .orders-status-buttons {
+    gap: 10px;
+  }
+
+  .orders-status-button {
+    padding: 11px 18px;
+    font-size: 0.95rem;
   }
 
   .order-card {
