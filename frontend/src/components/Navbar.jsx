@@ -12,15 +12,15 @@ function Navbar() {
 
   const [user, setUser] = useState(null);
 
-  const { cartItems } = useContext(CartContext);
+  // UPDATED CART
+  const { cart, setCart } =
+    useContext(CartContext);
 
-  const totalItems = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const totalItems = cart.totalQuantity;
 
   const loadUser = () => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser =
+      localStorage.getItem("user");
 
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -32,16 +32,31 @@ function Navbar() {
   useEffect(() => {
     loadUser();
 
-    window.addEventListener("storage", loadUser);
+    window.addEventListener(
+      "storage",
+      loadUser
+    );
 
     return () => {
-      window.removeEventListener("storage", loadUser);
+      window.removeEventListener(
+        "storage",
+        loadUser
+      );
     };
   }, []);
 
+  // UPDATED LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("token");
+
     localStorage.removeItem("user");
+
+    // CLEAR FRONTEND CART
+    setCart({
+      items: [],
+      totalQuantity: 0,
+      totalPrice: 0,
+    });
 
     setUser(null);
 
@@ -51,17 +66,26 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar-logo">
-        <Link to="/">Electronics Store</Link>
+        <Link to="/">
+          Electronics Store
+        </Link>
       </div>
 
       <nav className="navbar-links">
         <Link to="/">Home</Link>
 
-        <Link to="/products">Products</Link>
+        <Link to="/products">
+          Products
+        </Link>
 
-        <Link to="/about">About</Link>
+        <Link to="/about">
+          About
+        </Link>
 
-        <Link to="/cart" className="cart-link">
+        <Link
+          to="/cart"
+          className="cart-link"
+        >
           <FaShoppingCart />
 
           <span>Cart</span>
@@ -74,16 +98,24 @@ function Navbar() {
         </Link>
 
         {user?.role === "admin" && (
-          <Link to="/admin">Admin</Link>
+          <Link to="/admin">
+            Admin
+          </Link>
         )}
 
         {user ? (
           <div className="navbar-auth">
-            <Link to="/orders" className="orders-link">
+            <Link
+              to="/orders"
+              className="orders-link"
+            >
               Orders
             </Link>
 
-            <Link to="/account" className="navbar-user">
+            <Link
+              to="/account"
+              className="navbar-user"
+            >
               Hi, {user.firstname}
             </Link>
 
@@ -96,7 +128,10 @@ function Navbar() {
           </div>
         ) : (
           <div className="navbar-auth">
-            <Link to="/login" className="login-nav-link">
+            <Link
+              to="/login"
+              className="login-nav-link"
+            >
               Login
             </Link>
 
