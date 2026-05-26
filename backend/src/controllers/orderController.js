@@ -1,19 +1,11 @@
-import order from "../models/orderModel.js";
+import Order from "../models/schema/orderSchema.js";
 
 class OrderController {
-  async getAllOrders(req, res, next) {
-    try {
-      const result = await order.getAllOrders();
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  }
 
   async getUserOrders(req, res, next) {
     try {
-      const { userId } = req.params;
-      const result = await order.getUserOrders(userId);
+      console.log(req.user.id)
+      const result = await Order.find({ userId: req.user.id});;
       res.json(result);
     } catch (error) {
       next(error);

@@ -239,7 +239,7 @@ class adminController {
     async getAllOrders(req, res) {
         try {
 
-            const orders = await Order.find({status: "paid"}).sort({
+            const orders = await Order.find({}).sort({
                 timeCreated: -1
             });
 
