@@ -1,12 +1,19 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 
 function Success() {
   const { clearCart } = useContext(CartContext);
+  const hasClearedCart = useRef(false);
 
   useEffect(() => {
     async function handleSuccess() {
+      if (hasClearedCart.current) {
+        return;
+      }
+
+      hasClearedCart.current = true;
+
       try {
         await clearCart();
       } catch (error) {
@@ -15,7 +22,7 @@ function Success() {
     }
 
     handleSuccess();
-  }, [clearCart]);
+  }, []);
 
   return (
     <main className="payment-result-page">
