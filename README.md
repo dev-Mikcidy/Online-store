@@ -25,12 +25,6 @@ The project features a protected admin dashboard where administrators can manage
 - JWT authentication
 - Stripe payment integration
 
-## Live Demo
-
-Frontend (Vercel): online-store-six-inky.vercel.app 
-
-Backend API (Render): https://online-store-8qo5.onrender.comapi/products
-
 # Project Setup Instructions
 
 This section explains how to clone the project, install the needed dependencies and run the frontend and backend locally.
